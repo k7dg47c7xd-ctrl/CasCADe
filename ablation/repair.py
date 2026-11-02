@@ -15,20 +15,21 @@ from typing import Any, Callable, Dict, List, Tuple
 from validation import compact_repair_errors
 
 SYSTEM_PROMPT = (
-    "你是一个三维 CAD JSON 生成器。根据用户自然语言需求生成符合 CAD-JSON 规范的三维建模结构。"
-    "只输出 JSON，不输出 Markdown、解释或注释。根节点必须是 Group。每个节点必须且只能包含 "
-    "type/features/group/coordinates/parameters 五个字段。type 只能取 "
-    "Group/Fuse/Cut/Prism/Face/Wire/Edge/Arc/Circle。"
+    "You are a 3D CAD JSON generator. Generate a 3D modeling structure that conforms to the CAD-JSON specification based on the user's natural language requirements. "
+    "Output only JSON, without Markdown, explanations, or comments. The root node must be a Group. Each node must contain exactly the five fields "
+    "type/features/group/coordinates/parameters. The type can only be one of "
+    "Group/Fuse/Cut/Prism/Face/Wire/Edge/Arc/Circle."
 )
 
-REPAIR_RULES = """修复要求：
-1. 只输出一个完整 JSON 对象，不要输出 Markdown、解释或注释。
-2. 优先做最小修改；保留上一轮中已经正确的几何语义、节点类型、坐标、尺寸、布尔关系和层级。
-3. 必须逐条处理“验证错误”中给出的 path/code/message；不要凭空改动无关节点。
-4. CAD-JSON Schema 约束：根节点为 Group；每个节点恰好包含 type/features/group/coordinates/parameters；operator/creator 的 group 必须正确。
-5. 几何约束：Wire 必须闭合；Face 必须能由有效轮廓构造；Prism 必须形成非零体积有效实体；Fuse/Cut 必须真正产生几何效果。
-6. 不要为了通过检查而删除 Edge/Arc/Circle/Cut/Fuse，或把复杂轮廓无依据地简化成模板体。
-7. 不使用任何参考答案、ground truth 或预期节点类型；只能依据原始任务、上一轮输出和验证错误修复。
+
+REPAIR_RULES = """Repair requirements:
+1. Output only one complete JSON object. Do not output Markdown, explanations, or comments.
+2. Prefer minimal changes; preserve the already-correct geometric semantics, node types, coordinates, dimensions, boolean relationships, and hierarchy from the previous round.
+3. You must address each path/code/message given in the "validation errors" one by one; do not modify unrelated nodes without justification.
+4. CAD-JSON Schema constraints: the root node must be a Group; each node must contain exactly type/features/group/coordinates/parameters; the group field for operator/creator nodes must be correct.
+5. Geometric constraints: Wire must be closed; Face must be constructible from valid contours; Prism must form a valid solid with non-zero volume; Fuse/Cut must actually produce a geometric effect.
+6. Do not delete Edge/Arc/Circle/Cut/Fuse just to pass validation, or simplify complex contours into template solids without justification.
+7. Do not use any reference answers, ground truth, or expected node types; repair only based on the original task, the previous output, and validation errors.
 """
 
 
