@@ -1,0 +1,30 @@
+# CasCADe dependency list
+# Version ranges come from the original experiment environment (Linux, Python 3.10, LLaMA-Factory 0.9.5.108).
+# During packaging, only syntax/configuration checks were performed on Windows Python 3.13 without torch;
+# a clean-environment installation has not been fully verified. After installing, validate stage by stage per the README.
+
+# --- Base ---
+numpy>=1.24
+pyyaml>=6.0
+tqdm>=4.64
+pandas>=1.5
+requests>=2.28
+
+# --- LLM inference / fine-tuning ---
+torch>=2.1
+transformers>=4.40
+peft>=0.10
+accelerate>=0.30
+datasets>=2.16
+
+# --- QLoRA (LLaMA-Factory training dependency) ---
+bitsandbytes>=0.43
+
+# --- Three-stage validation (OCC geometric reconstruction checks) ---
+pythonocc-core>=7.7
+
+# --- Optional: natural-language description generation (OpenAI-compatible API: DashScope/DeepSeek etc.) ---
+openai>=1.30
+
+# --- Optional: some interactive scripts ---
+gradio>=4.0

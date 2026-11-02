@@ -1,0 +1,80 @@
+# Paths: defaults are repo-relative; adjust to your GPU server layout.
+data_root: data
+test_splits:
+  simple: ablation/splits/simple
+  complex: ablation/splits/complex
+
+merged_model: saves/qwen3_6_27b/lora+qwen3_6_27b_fixed
+base_model: saves/base/Qwen3.6-27B
+api_base_url: "http://127.0.0.1:8001/v1"
+api_model: "qwen3.6-27b-merged"
+api_key: "EMPTY"
+
+
+generation:
+  max_new_tokens: 4096
+  temperature: 0.1
+  top_p: 1.0
+  max_repair_rounds: 3
+
+output_dir: ablation/outputs
+reuse_initial_outputs: true  # all ablation variants share the same initial y0
+
+# Repair-stage ablations. Keep the same model/data split and change only one repair factor.
+variants:
+  full_repair:
+    desc: "Full: syntax + schema + geometry triggers, structured feedback"
+    repair: true
+    repair_trigger: full
+    feedback_mode: structured
+
+  no_repair:
+    desc: "Generation only; all repair disabled"
+    repair: false
+    repair_trigger: full
+    feedback_mode: structured
+
+  syntax_only_repair:
+    desc: "Only JSON parse failure can trigger repair"
+    repair: true
+    repair_trigger: syntax
+    feedback_mode: structured
+
+  syntax_schema_repair:
+    desc: "Syntax + schema can trigger repair; geometry excluded"
+    repair: true
+    repair_trigger: syntax_schema
+    feedback_mode: structured
+
+  full_generic_feedback:
+    desc: "Full triggers but only generic failed-stage feedback"
+    repair: true
+    repair_trigger: full
+    feedback_mode: generic
+
+  full_no_error_feedback:
+    desc: "Full triggers but no structured error details"
+    repair: true
+    repair_trigger: full
+    feedback_mode: none
+
+  full_one_round:
+    desc: "Full repair but maximum one repair iteration"
+    repair: true
+    repair_trigger: full
+    feedback_mode: structured
+    max_repair_rounds: 1
+
+  full_three_rounds:
+    desc: "Full repair with up to three repair iterations"
+    repair: true
+    repair_trigger: full
+    feedback_mode: structured
+    max_repair_rounds: 3
+
+  full_allow_no_effect_boolean:
+    desc: "Full validation but cut/fuse no-effect is only a warning"
+    repair: true
+    repair_trigger: full
+    feedback_mode: structured
+    allow_no_effect_boolean: true
